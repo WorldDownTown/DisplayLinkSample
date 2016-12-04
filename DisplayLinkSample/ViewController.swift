@@ -18,15 +18,14 @@ class ViewController: UIViewController {
         // 円のレイヤー
         let frame = view.frame
         let path = UIBezierPath()
-        path.addArcWithCenter(
-            CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame)),
-            radius: frame.width / 2.0 - 20.0,
-            startAngle: CGFloat(-M_PI_2),
-            endAngle: CGFloat(M_PI + M_PI_2),
-            clockwise: true)
-        secondLayer.path = path.CGPath
-        secondLayer.strokeColor = UIColor.blackColor().CGColor
-        secondLayer.fillColor = UIColor.clearColor().CGColor
+        path.addArc(withCenter: CGPoint(x: frame.midX, y: frame.midY),
+                    radius: frame.width / 2.0 - 20.0,
+                    startAngle: CGFloat(-M_PI_2),
+                    endAngle: CGFloat(M_PI + M_PI_2),
+                    clockwise: true)
+        secondLayer.path = path.cgPath
+        secondLayer.strokeColor = UIColor.black.cgColor
+        secondLayer.fillColor = UIColor.clear.cgColor
         secondLayer.speed = 0.0
         view.layer.addSublayer(secondLayer)
 
@@ -35,18 +34,18 @@ class ViewController: UIViewController {
         animation.fromValue = 0.0
         animation.toValue = 1.0
         animation.duration = 60.0
-        secondLayer.addAnimation(animation, forKey: "strokeCircle")
+        secondLayer.add(animation, forKey: "strokeCircle")
 
         // CADisplayLink設定
-        let displayLink = CADisplayLink(target: self, selector: Selector("update:"))
-        displayLink.frameInterval = 1   // 1フレームごとに実行
-        displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+        let displayLink = CADisplayLink(target: self, selector: #selector(update(_:)))
+        displayLink.preferredFramesPerSecond = 60   // FPS設定
+        displayLink.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
     }
 
-    func update(displayLink: CADisplayLink) {
+    func update(_ displayLink: CADisplayLink) {
         // timeOffsetに現在時刻の秒数を設定
-        let time = NSDate().timeIntervalSince1970
-        let seconds = floor(time) % 60
+        let time = Date().timeIntervalSince1970
+        let seconds = floor(time).truncatingRemainder(dividingBy: 60)
         let milliseconds = time - floor(time)
         secondLayer.timeOffset = seconds + milliseconds
     }
