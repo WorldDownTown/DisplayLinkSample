@@ -8,45 +8,45 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
-    private let secondLayer = CAShapeLayer()
+final class ViewController: UIViewController {
+    private let secondLayer: CAShapeLayer = .init()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // 円のレイヤー
-        let frame = view.frame
-        let path = UIBezierPath()
-        path.addArc(withCenter: CGPoint(x: frame.midX, y: frame.midY),
-                    radius: frame.width / 2.0 - 20.0,
-                    startAngle: CGFloat(-M_PI_2),
-                    endAngle: CGFloat(M_PI + M_PI_2),
+        let frame: CGRect = view.frame
+        let path: UIBezierPath = .init()
+        let margin: CGFloat = 20
+        path.addArc(withCenter: CGPoint(x: frame.width / 2, y: frame.height / 2),
+                    radius: frame.width / 2 - margin,
+                    startAngle: CGFloat(-Double.pi / 2),
+                    endAngle: CGFloat(Double.pi * 1.5),
                     clockwise: true)
         secondLayer.path = path.cgPath
         secondLayer.strokeColor = UIColor.black.cgColor
         secondLayer.fillColor = UIColor.clear.cgColor
-        secondLayer.speed = 0.0
+        secondLayer.speed = 0
         view.layer.addSublayer(secondLayer)
 
         // 円を描くアニメーション
         let animation = CABasicAnimation(keyPath: "strokeEnd")
-        animation.fromValue = 0.0
-        animation.toValue = 1.0
-        animation.duration = 60.0
+        animation.fromValue = 0
+        animation.toValue = 1
+        animation.duration = 60
         secondLayer.add(animation, forKey: "strokeCircle")
 
         // CADisplayLink設定
-        let displayLink = CADisplayLink(target: self, selector: #selector(update(_:)))
+        let displayLink: CADisplayLink = .init(target: self, selector: #selector(update(_:)))
         displayLink.preferredFramesPerSecond = 60   // FPS設定
-        displayLink.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
+        displayLink.add(to: .current, forMode: .common)
     }
 
-    func update(_ displayLink: CADisplayLink) {
+    @objc private func update(_ displayLink: CADisplayLink) {
         // timeOffsetに現在時刻の秒数を設定
-        let time = Date().timeIntervalSince1970
-        let seconds = floor(time).truncatingRemainder(dividingBy: 60)
-        let milliseconds = time - floor(time)
+        let time: TimeInterval = Date().timeIntervalSince1970
+        let seconds: TimeInterval = floor(time).truncatingRemainder(dividingBy: 60)
+        let milliseconds: TimeInterval = time - floor(time)
         secondLayer.timeOffset = seconds + milliseconds
     }
 }
